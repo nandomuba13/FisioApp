@@ -1,0 +1,13 @@
+/* index.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white !important; /* Fuerza el blanco en todo el navegador */
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
