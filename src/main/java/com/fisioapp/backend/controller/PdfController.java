@@ -78,20 +78,39 @@ public class PdfController {
 
             document.add(new Paragraph("Hábitos tóxicos",fontSubtitulo));
             if (datos.getHabitosToxicos() != null && !datos.getHabitosToxicos().isEmpty()){
-                String malosHabitos = String.join(" ,", datos.getHabitosToxicos());
-                document.add(new Paragraph(datos.getMotivoConsulta(), fontTexto));
+                String malosHabitos = String.join(", ", datos.getHabitosToxicos());
+                document.add(new Paragraph(malosHabitos, fontTexto));
             }
 
 
 
             document.add(new Paragraph("Horas de sueño",fontSubtitulo));
             document.add(new Paragraph(String.valueOf(datos.getHorasSueño()), fontTexto));
+            //Slider
+            document.add(new Paragraph("Nivel de estrés percibido (1-10): " +
+                    (datos.getNivelEstres() != null ? datos.getNivelEstres() : "No registrado"), fontTexto));
+            document.add(new Paragraph("------------------------------------------------"));
+            //EVA
+            document.add(new Paragraph("Evaluación Subjetiva del Dolor (EVA)", fontSubtitulo));
+            document.add(new Paragraph(datos.getLocalizacionDolor(),fontTexto));
+            if (datos.getPatronIrradiacion() != null && !datos.getPatronIrradiacion().isEmpty()){
+                document.add(new Paragraph("Patrón de Irradiación" ,fontSubtitulo));
+                document.add(new Paragraph(datos.getPatronIrradiacion(),fontTexto));
+                document.add(new Paragraph(" "));
+            }
+            document.add(new Paragraph("Características del dolor", fontNegrita));
+            if (datos.getTipoDolor() != null && !datos.getTipoDolor().isEmpty()){
+                String tipoDolor = String.join(", ", datos.getTipoDolor());
+                document.add(new Paragraph(tipoDolor, fontTexto));
+            }
+
             document.add(new Paragraph("------------------------------------------------"));
             // Diagnóstico
             document.add(new Paragraph("Diagnóstico Fisioterapéutico:", fontSubtitulo));
             Paragraph diagnostico = new Paragraph(datos.getDiagnostico(), fontTexto);
             diagnostico.setSpacingAfter(10); // Espacio abajo
             document.add(diagnostico);
+
 
             // Plan de Tratamiento (En un recuadro para resaltar)
             PdfPTable tablaPlan = new PdfPTable(1);

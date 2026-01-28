@@ -26,8 +26,79 @@ public class DtoRequest {
     private String actividadFisica;
     private List<String> habitosToxicos; //Second Checkbox
     private int horasSueño;
-
+    private Integer nivelEstres;
+    //Evaluación subjetiva del dolor
+    private String localizacionDolor, patronIrradiacion;
+    private List<String> tipoDolor;
+    private List<String> ritmoDolor;
+    private Integer dolorActual;
+    private String dolorMaximo, dolorMinimo;
     /*Fin de variables diagnosticos*/
+
+
+    public String getLocalizacionDolor() {
+        return localizacionDolor;
+    }
+
+    public void setLocalizacionDolor(String localizacionDolor) {
+        this.localizacionDolor = localizacionDolor;
+    }
+
+    public String getPatronIrradiacion() {
+        return patronIrradiacion;
+    }
+
+    public void setPatronIrradiacion(String patronIrradiacion) {
+        this.patronIrradiacion = patronIrradiacion;
+    }
+
+    public List<String> getTipoDolor() {
+        return tipoDolor;
+    }
+
+    public void setTipoDolor(List<String> tipoDolor) {
+        this.tipoDolor = tipoDolor;
+    }
+
+    public Integer getDolorActual() {
+        return dolorActual;
+    }
+
+    public void setDolorActual(Integer dolorActual) {
+        this.dolorActual = dolorActual;
+    }
+
+    public String getDolorMaximo() {
+        return dolorMaximo;
+    }
+
+    public void setDolorMaximo(String dolorMaximo) {
+        this.dolorMaximo = dolorMaximo;
+    }
+
+    public String getDolorMinimo() {
+        return dolorMinimo;
+    }
+
+    public void setDolorMinimo(String dolorMinimo) {
+        this.dolorMinimo = dolorMinimo;
+    }
+
+    public List<String> getRitmoDolor() {
+        return ritmoDolor;
+    }
+
+    public void setRitmoDolor(List<String> ritmoDolor) {
+        this.ritmoDolor = ritmoDolor;
+    }
+
+    public Integer getNivelEstres() {
+        return nivelEstres;
+    }
+
+    public void setNivelEstres(Integer nivelEstres) {
+        this.nivelEstres = nivelEstres;
+    }
 
     public List<String> getHabitosToxicos() {
         return habitosToxicos;

@@ -102,12 +102,34 @@ const styles = {
         marginTop: '5px',
         marginBottom: '15px',
         cursor: 'pointer'
+    },
+    sliderContainer: {
+        border: '1px solid #ccc',
+        borderRadius: '50px', // Bordes muy redondos (estilo cápsula)
+        padding: '15px 25px',
+        backgroundColor: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '15px',
+        marginTop: '10px'
+    },
+    rangeInput: {
+        width: '100%',
+        cursor: 'pointer',
+        accentColor: '#27ae60' // Esto pinta la bolita y la barra de verde automáticamente
+    },
+    numberDisplay: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: '#2c3e50',
+        minWidth: '30px',
+        textAlign: 'center'
     }
 };
 
 function App() {
-    const { register, handleSubmit } = useForm();
-
+    const { register, handleSubmit,watch } = useForm();
+    const valorEstres = watch("nivelEstres", 5);
     const onSubmit = async (data) => {
         try {
             // Enviamos los datos al servidor Java
@@ -219,33 +241,67 @@ function App() {
                         <option value="Moderada (3-5 veces/sem)">Moderada (3-5 veces/sem)</option>
                         <option value="Atleta (Intensa, diaria)">Atleta (Intensa, diaria)</option>
                     </select>
-                </div>
-                {/*Sección malos habitos*/}
-                <div style={styles.section}>
-                    <h3 style={{color: '#00a8cc'}}>Hábitos tóxicos</h3>
-                    <div style={styles.checkboxContainer}>
-                        {/* Nota: Todos usan register("antecedentes") para guardarse en la misma lista */}
-                        <label style={styles.checkboxItem}>
-                            <input type="checkbox" value="Fumador/a" {...register("habitosToxicos")} />
-                            Fumar
-                        </label>
 
-                        <label style={styles.checkboxItem}>
-                            <input type="checkbox" value="Alcohol" {...register("habitosToxicos")} />
-                            Alcohol
-                        </label>
+                    {/*Sección malos habitos*/}
+                    <div style={styles.section}>
+                        <label style={styles.label}>Hábitos tóxicos:</label>
+                        <div style={styles.checkboxContainer}>
 
-                        <label style={styles.checkboxItem}>
-                            <input type="checkbox" value="Drogas" {...register("habitosToxicos")} />
-                            Drogas
-                        </label>
+                            <label style={styles.checkboxItem}>
+                                <input type="checkbox" value="Fumador/a" {...register("habitosToxicos")} />
+                                Fumar
+                            </label>
+
+                            <label style={styles.checkboxItem}>
+                                <input type="checkbox" value="Alcohol" {...register("habitosToxicos")} />
+                                Alcohol
+                            </label>
+
+                            <label style={styles.checkboxItem}>
+                                <input type="checkbox" value="Drogas" {...register("habitosToxicos")} />
+                                Drogas
+                            </label>
+                        </div>
+                        <label style={styles.label}>Horas de sueño:</label>
+                        <textarea
+                            style={styles.textarea}
+                            {...register("horasSueño")}
+                            placeholder="Aproximadamente."
+                        />
+
+
+                    {/* --- SECCIÓN: ESTRÉS (Slider) --- */}
+                        <label style={styles.label}>Nivel de Estrés Percibido (1-10):</label>
+
+                        <div style={styles.sliderContainer}>
+                            {/* El input tipo "range" es la barra deslizante */}
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                step="1"
+                                style={styles.rangeInput}
+                                {...register("nivelEstres")}
+                                defaultValue="5" // Valor inicial visual
+                            />
+
+                            {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                            <span style={styles.numberDisplay}>{valorEstres}</span>
+                        </div>
                     </div>
-                    <label style={styles.label}>Horas de sueño:</label>
+                </div>
+
+                {/*EVA*/}
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}>Evaluación Subjetiva del Dolor (EVA)</h3>
+                    <label style={styles.label}>Localización del Dolor: </label>
                     <textarea
                         style={styles.textarea}
-                        {...register("horasSueño")}
-                        placeholder="Aproximadamente."
+                        {...register("localizacionDolor")}
+                        placeholder="Region Lumbar..."
                     />
+                    <label style={styles.label}>Patron de Irradiación: </label>
+                    <textarea style={styles.textarea}{...register("patronIrradiacion")} placeholder={"Ej. Ciatia a pierna izquierda..."}/>
                 </div>
 
                 {/* SECCIÓN 2: CONSULTA MÉDICA */}
