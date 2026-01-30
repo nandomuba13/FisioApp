@@ -1,6 +1,6 @@
 package com.fisioapp.backend.controller;
 
-import com.fisioapp.backend.dto.DtoRequest;
+import com.fisioapp.backend.dto.DtoRequest; // Asegúrate que tu DTO se llame así o ConsultaDTO
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 
-@RestController // Esto le dice a Spring que esta clase responde a internet
-@RequestMapping("/api/pdf") // La dirección base
-@CrossOrigin(origins = "*") // IMPORTANTE: Permite que React (o cualquiera) se conecte
+@RestController
+@RequestMapping("/api/pdf")
+@CrossOrigin(origins = "*")
 public class PdfController {
 
     @PostMapping("/generar")
@@ -38,8 +38,8 @@ public class PdfController {
             document.add(new Paragraph("Fecha de Consulta: " + java.time.LocalDate.now(), fontTexto));
             document.add(new Paragraph(" ")); // Espacio vacío
 
-            // --- 2. TABLA DE DATOS DEL PACIENTE (Se ve más ordenado) ---
-            PdfPTable tablaPaciente = new PdfPTable(2); // 2 Columnas
+            // --- 2. TABLA DE DATOS DEL PACIENTE ---
+            PdfPTable tablaPaciente = new PdfPTable(2);
             tablaPaciente.setWidthPercentage(100);
 
             // Celda 1: Nombre
@@ -53,72 +53,122 @@ public class PdfController {
             tablaPaciente.addCell(celdaTel);
 
             document.add(tablaPaciente);
-            document.add(new Paragraph(" ")); // Espacio
+            document.add(new Paragraph(" "));
 
-            // --- 3. SECCIONES MÉDICAS (Con títulos en negrita) ---
+            // --- 3. SECCIONES MÉDICAS ---
 
             // Motivo
             document.add(new Paragraph("Motivo de Consulta:", fontSubtitulo));
             document.add(new Paragraph(datos.getMotivoConsulta(), fontTexto));
             document.add(new Paragraph("------------------------------------------------"));
 
+            // Antecedentes
             document.add(new Paragraph("Antecedentes Médicos:", fontSubtitulo));
-
             if (datos.getAntecedentes() != null && !datos.getAntecedentes().isEmpty()) {
-                // Unir todo con comas (Ej: "Diabetes, Alergias")
                 String listaEnfermedades = String.join(", ", datos.getAntecedentes());
                 document.add(new Paragraph(listaEnfermedades, fontTexto));
             } else {
                 document.add(new Paragraph("Ninguno reportado.", fontTexto));
             }
 
-            document.add(new Paragraph("Estilo de vida:", fontSubtitulo));
-            document.add(new Paragraph("Nivel de Actividad: "+
+            // Estilo de vida
+            document.add(new Paragraph("Estilo de Vida:", fontSubtitulo));
+            document.add(new Paragraph("Nivel de Actividad: " +
                     (datos.getActividadFisica() != null ? datos.getActividadFisica() : "No especificado"), fontTexto ));
 
-            document.add(new Paragraph("Hábitos tóxicos",fontSubtitulo));
+            // Hábitos
+            document.add(new Paragraph("Hábitos Tóxicos:", fontNegrita));
             if (datos.getHabitosToxicos() != null && !datos.getHabitosToxicos().isEmpty()){
                 String malosHabitos = String.join(", ", datos.getHabitosToxicos());
                 document.add(new Paragraph(malosHabitos, fontTexto));
+            } else {
+                document.add(new Paragraph("Niega toxicomanías.", fontTexto));
             }
 
+            document.add(new Paragraph("Horas de Sueño: " +
+                    (datos.getHorasSueño() != null ? datos.getHorasSueño() : "No especificado"), fontTexto));
 
-
-            document.add(new Paragraph("Horas de sueño",fontSubtitulo));
-            document.add(new Paragraph(String.valueOf(datos.getHorasSueño()), fontTexto));
-            //Slider
-            document.add(new Paragraph("Nivel de estrés percibido (1-10): " +
+            // Estrés
+            document.add(new Paragraph("Nivel de Estrés Percibido (1-10): " +
                     (datos.getNivelEstres() != null ? datos.getNivelEstres() : "No registrado"), fontTexto));
+
             document.add(new Paragraph("------------------------------------------------"));
-            //EVA
+
+            // --- EVA y DOLOR ---
             document.add(new Paragraph("Evaluación Subjetiva del Dolor (EVA)", fontSubtitulo));
-            document.add(new Paragraph(datos.getLocalizacionDolor(),fontTexto));
+
+            document.add(new Paragraph("Localización:", fontNegrita));
+            document.add(new Paragraph(datos.getLocalizacionDolor() != null ? datos.getLocalizacionDolor() : "No descrito", fontTexto));
+
             if (datos.getPatronIrradiacion() != null && !datos.getPatronIrradiacion().isEmpty()){
-                document.add(new Paragraph("Patrón de Irradiación" ,fontSubtitulo));
-                document.add(new Paragraph(datos.getPatronIrradiacion(),fontTexto));
-                document.add(new Paragraph(" "));
+                document.add(new Paragraph("Patrón de Irradiación: " + datos.getPatronIrradiacion(), fontTexto));
             }
-            document.add(new Paragraph("Características del dolor", fontNegrita));
+
+            document.add(new Paragraph("Características del Dolor:", fontNegrita));
             if (datos.getTipoDolor() != null && !datos.getTipoDolor().isEmpty()){
                 String tipoDolor = String.join(", ", datos.getTipoDolor());
-                document.add(new Paragraph(tipoDolor, fontTexto));
+                document.add(new Paragraph("Tipo: " + tipoDolor, fontTexto));
             }
 
+            if (datos.getRitmoDolor() != null && !datos.getRitmoDolor().isEmpty()){
+                String ritmoDolor = String.join(", ", datos.getRitmoDolor());
+                document.add(new Paragraph("Ritmo: " + ritmoDolor, fontTexto));
+            }
+
+            // Intensidad EVA
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Intensidad del Dolor:", fontNegrita));
+            document.add(new Paragraph("Actual (0-10): " +
+                    (datos.getDolorActual() != null ? datos.getDolorActual() : "-"), fontTexto));
+            document.add(new Paragraph("Máximo (Peor): " +
+                    (datos.getDolorMaximo() != null ? datos.getDolorMaximo() : "-"), fontTexto));
+            document.add(new Paragraph("Mínimo (Mejor): " +
+                    (datos.getDolorMinimo() != null ? datos.getDolorMinimo() : "-"), fontTexto));
+
             document.add(new Paragraph("------------------------------------------------"));
-            // Diagnóstico
+
+            // --- EXPLORACIÓN FÍSICA ---
+            document.add(new Paragraph("Exploración Física y Funcional", fontSubtitulo));
+
+            // Frecuencia Cardiaca
+            document.add(new Paragraph("Frecuencia Cardiaca: " +
+                    (datos.getFrecuenciaCardiaca() != null ? datos.getFrecuenciaCardiaca() + " lpm" : "No registrado"), fontTexto));
+
+            // Frecuencia Respiratoria
+            document.add(new Paragraph("Frecuencia Respiratoria: " +
+                    (datos.getFrecuenciaRespiratoria() != null ? datos.getFrecuenciaRespiratoria() + " rpm" : "No registrado"), fontTexto));
+
+            // Temperatura
+            document.add(new Paragraph("Temperatura Corporal: " +
+                    (datos.getTemperaturaCorporal() != null ? datos.getTemperaturaCorporal() + " °C" : "No registrado"), fontTexto));
+
+            // Saturación
+            document.add(new Paragraph("Saturación de Oxígeno (SpO2): " +
+                    (datos.getSaturacionOxigeno() != null ? datos.getSaturacionOxigeno() + " %" : "No registrado"), fontTexto));
+
+            // Presión Arterial (Corregido nombres de variables)
+            String paTexto = "No registrado";
+            if (datos.getPresionArterialSistolica() != null && datos.getPresionArterialDiastolica() != null){
+                paTexto = datos.getPresionArterialSistolica() + "/" + datos.getPresionArterialDiastolica() + " mmHg";
+            }
+            document.add(new Paragraph("Presión Arterial (PA): " + paTexto, fontTexto));
+
+            document.add(new Paragraph(" "));
+
+            // --- DIAGNÓSTICO Y PLAN ---
             document.add(new Paragraph("Diagnóstico Fisioterapéutico:", fontSubtitulo));
             Paragraph diagnostico = new Paragraph(datos.getDiagnostico(), fontTexto);
-            diagnostico.setSpacingAfter(10); // Espacio abajo
+            diagnostico.setSpacingAfter(10);
             document.add(diagnostico);
 
-
-            // Plan de Tratamiento (En un recuadro para resaltar)
+            // Plan de Tratamiento
             PdfPTable tablaPlan = new PdfPTable(1);
+            tablaPlan.setWidthPercentage(100); // Asegurar que ocupe todo el ancho
             PdfPCell celdaPlan = new PdfPCell();
             celdaPlan.addElement(new Paragraph("PLAN DE TRATAMIENTO", fontNegrita));
             celdaPlan.addElement(new Paragraph(datos.getTratamiento(), fontTexto));
             celdaPlan.setPadding(15);
-            celdaPlan.setBackgroundColor(java.awt.Color.LIGHT_GRAY); // Fondo grisáceo
+            celdaPlan.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
             tablaPlan.addCell(celdaPlan);
 
             document.add(tablaPlan);
@@ -133,7 +183,6 @@ public class PdfController {
 
             document.close();
 
-            // Devolver el PDF
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("filename", "historia_" + datos.getNombrePaciente() + ".pdf");

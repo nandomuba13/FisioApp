@@ -124,12 +124,52 @@ const styles = {
         color: '#2c3e50',
         minWidth: '30px',
         textAlign: 'center'
+    },
+    // Contenedor para poner cosas lado a lado
+    rowContainer: {
+        display: 'flex',
+        gap: '15px', // Espacio entre los cuadritos
+        alignItems: 'center'
+    },
+    // Estilo para cuadritos pequeños de números
+    smallInput: {
+        width: '120px', // Ancho fijo para que se vean cuadraditos
+        padding: '12px',
+        borderRadius: '6px',
+        border: '1px solid #ccc',
+        textAlign: 'center', // Número centrado
+        fontSize: '18px'
+    },
+    // Estilo extra para el borde verde (Sistólica)
+    inputGreen: {
+        width: '120px',
+        padding: '12px',
+        borderRadius: '6px',
+        border: '2px solid #27ae60', // Borde verde más grueso
+        backgroundColor: '#f9fff9',
+        textAlign: 'center',
+        fontSize: '18px',
+        outline: 'none'
     }
 };
 
 function App() {
-    const { register, handleSubmit,watch } = useForm();
+    const { register, handleSubmit, watch } = useForm({
+        defaultValues: {
+            antecedentes: [],      // Inicializamos como lista vacía
+            habitosToxicos: [],    // Inicializamos como lista vacía
+            tipoDolor: [],         // Inicializamos como lista vacía
+            ritmoDolor: []         // Inicializamos como lista vacía
+        }
+    });
     const valorEstres = watch("nivelEstres", 5);
+    const dolorActual = watch("dolorActual", 5);
+    const frecuenciaCardiaca = watch("frecuenciaCardiaca", 80);
+    const frecuenciaRespiratoria = watch("frecuenciaRespiratoria", 16);
+    const temperaturaCorporal = watch("temperaturaCorporal", 36.5);
+    const saturacionOxigeno = watch("saturacionOxigeno",98);
+
+
     const onSubmit = async (data) => {
         try {
             // Enviamos los datos al servidor Java
@@ -170,7 +210,7 @@ function App() {
                     <input
                         style={styles.input}
                         {...register("nombrePaciente", { required: true })}
-                        placeholder="Ej: María González"
+                        placeholder="Ej: Juan Muñoz"
                     />
 
                     <label style={styles.label}>Teléfono:</label>
@@ -302,7 +342,176 @@ function App() {
                     />
                     <label style={styles.label}>Patron de Irradiación: </label>
                     <textarea style={styles.textarea}{...register("patronIrradiacion")} placeholder={"Ej. Ciatia a pierna izquierda..."}/>
+                    <h3 style={{color: '#00a8cc'}}>Características del dolor</h3>
+                    <label style={styles.label}>Tipo de dolor:</label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Punzante" {...register("tipoDolor")} />
+                            Punzante
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Eléctrico" {...register("tipoDolor")} />
+                            Eléctrico
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Opresivo" {...register("tipoDolor")} />
+                            Opresivo
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Ardiente" {...register("tipoDolor")} />
+                            Ardiente
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Sordo / Pesado" {...register("tipoDolor")} />
+                            Sordo / Pesado
+                        </label>
+                    </div>
+                    <label style={styles.label}>Ritmo del dolor: </label>
+                    <div style={styles.checkboxContainer}>
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Mecánico" {...register("ritmoDolor")} />
+                            Mecánico (Mejora con reposo)
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Inflamatorio" {...register("ritmoDolor")} />
+                            Inflamatorio (Empeora con reposo)
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Mixto" {...register("ritmoDolor")} />
+                            Mixto
+                        </label>
+                    </div>
+                    <label style={styles.label}>Dolor *ACTUAL* (EVA) (0-10):</label>
+
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("dolorActual")}
+                            defaultValue="5" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{dolorActual}</span>
+                    </div>
+                    <label style={styles.label}>Dolor *Máximo* (Peor):</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("dolorMaximo")}
+                        placeholder="Ej. 8"
+                    />
+                    <label style={styles.label}>Dolor *Mínimo* (Mejor):</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("dolorMinimo")}
+                        placeholder="Ej. 2"
+                    />
                 </div>
+
+                {/*Características del dolor */}
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> Exploración física y funcional</h3>
+                    <label style={styles.label}>1. Signos vitales y estado basal</label>
+
+                    <label style={styles.label}>Frecuencia Cardiaca (FC):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="40"
+                            max="180"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("frecuenciaCardiaca")}
+                            defaultValue="80" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{frecuenciaCardiaca} lpm</span>
+                    </div>
+                    <label style={styles.label}>Frecuencia Respiratoria (FR):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="8"
+                            max="40"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("frecuenciaRespiratoria")}
+                            defaultValue="16" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{frecuenciaRespiratoria} rpm</span>
+                    </div>
+                    <label style={styles.label}>Temperatura Corporal:</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="35.0"
+                            max="42.0"
+                            step="0.1"
+                            style={styles.rangeInput}
+                            {...register("temperaturaCorporal")}
+                            defaultValue="36.5" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{temperaturaCorporal} °C </span>
+                    </div>
+                    <label style={styles.label}>Saturación de Oxígeno (SpO2):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="70"
+                            max="100"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("saturacionOxigeno")}
+                            defaultValue="98" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{saturacionOxigeno} %</span>
+                    </div>
+                    <label style={styles.label}>Presión Arterial (PA) Sistólica/Diastólica (mmHg):</label>
+
+                    <div style={styles.rowContainer}>
+                        {/* Input Sistólica (El del borde verde) */}
+                        <input
+                            type="number"
+                            placeholder="120"
+                            style={styles.inputGreen} // Usamos el estilo verde
+                            {...register("presionArterialSistolica")}
+                        />
+
+                        <span style={{fontSize: '20px', fontWeight: 'bold'}}>/</span>
+
+                        {/* Input Diastólica (El normal) */}
+                        <input
+                            type="number"
+                            placeholder="80"
+                            style={styles.smallInput} // Usamos el estilo normal
+                            {...register("presionArterialDiastolica")}
+                        />
+                    </div>
+                </div>
+
+
 
                 {/* SECCIÓN 2: CONSULTA MÉDICA */}
                 <div style={styles.section}>
