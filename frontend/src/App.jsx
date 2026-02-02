@@ -156,10 +156,29 @@ const styles = {
 function App() {
     const { register, handleSubmit, watch } = useForm({
         defaultValues: {
-            antecedentes: [],      // Inicializamos como lista vacía
-            habitosToxicos: [],    // Inicializamos como lista vacía
-            tipoDolor: [],         // Inicializamos como lista vacía
-            ritmoDolor: []         // Inicializamos como lista vacía
+            // --- LISTAS (Checkboxes múltiples) ---
+            antecedentes: [],
+            habitosToxicos: [],
+            tipoDolor: [],
+            ritmoDolor: [],
+
+            // Nuevos checkboxes (IMPORTANTE agregarlos aquí)
+            expansionToracica: [],
+            coloracionPiel: [],
+            llenadoCapilar: [],
+            hallazgosEspecificos: [],
+
+            // --- TEXTOS ÚNICOS (Radios, Selects, Inputs) ---
+            tonoMuscular: "",        // Radio
+            integridadCutanea: "",   // Radio
+            presenciaEdema: "",      // Select
+
+            // Textareas y otros
+            rangoMovimientoActivo: "",
+            rangoMovimientoPasivo: "",
+            fuerzaMuscular: "",
+            perimetrosMusculares: "",
+            horasSueño: ""
         }
     });
     const valorEstres = watch("nivelEstres", 5);
@@ -168,6 +187,11 @@ function App() {
     const frecuenciaRespiratoria = watch("frecuenciaRespiratoria", 16);
     const temperaturaCorporal = watch("temperaturaCorporal", 36.5);
     const saturacionOxigeno = watch("saturacionOxigeno",98);
+    const equilibrioEstatico = watch("equilibrioEstatico",10);
+    const equilibrioDinamico = watch("equilibrioDinamico",10);
+    const coordinacionMotora = watch("coordinacionMotora",10);
+    const propiocepcion = watch("propiocepcion",10);
+
 
 
     const onSubmit = async (data) => {
@@ -509,14 +533,229 @@ function App() {
                             {...register("presionArterialDiastolica")}
                         />
                     </div>
+
+                    <label style={styles.label}>2. Balance y coordinación</label>
+                    <label style={styles.label}>Equilibrio Estático (0 = Nulo, 10=Perfecto):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("equilibrioEstatico")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{equilibrioEstatico} /10 </span>
+                    </div>
+
+                    <label style={styles.label}>Equilibrio Dinámico (0 = Nulo, 10=Perfecto):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("equilibrioDinamico")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{equilibrioDinamico} /10 </span>
+                    </div>
+
+                    <label style={styles.label}>Coordinación Motora (0 = Nulo, 10=Perfecto):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("coordinacionMotora")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{coordinacionMotora} /10</span>
+                    </div>
+
+                    <label style={styles.label}>Propiocepcion (0 = Nulo, 10=Perfecto):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("propiocepcion")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{propiocepcion} /10</span>
+                    </div>
+                </div>
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> Evaluación Respiratoria y Circulatoria Básica</h3>
+                    <label style={styles.label}>Expansión Torácica:</label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Conservada" {...register("expansionToracica")} />
+                            Conservada
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Disminuida" {...register("expansionToracica")} />
+                            Disminuida
+                        </label>
+
+                    </div>
+
+                    <label style={styles.label}>Coloración de Piel:</label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Normal" {...register("coloracionPiel")} />
+                            Normal
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Pálida" {...register("coloracionPiel")} />
+                            Pálida
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Cianótica" {...register("coloracionPiel")}/>
+                            Cianótica
+                        </label>
+                    </div>
+
+                    <label style={styles.label}>Llenado Capilar:</label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Normal" {...register("llenadoCapilar")} />
+                            Normal (2 o menos segundos)
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Lento" {...register("llenadoCapilar")} />
+                            Lento (Mayor a 2 segundos)
+                        </label>
+
+                    </div>
+
+                    <label style={styles.label}>Presencia de Edema:</label>
+
+                    {/* El elemento <select> crea el menú desplegable */}
+                    <select style={styles.selectInput} {...register("presenciaEdema")}>
+                        <option value="">-- Seleccione una opción --</option>
+                        <option value="Ausente">Ausente</option>
+                        <option value="Leve">Leve</option>
+                        <option value="Moderado ">Moderado</option>
+                        <option value="Severo">Severo</option>
+                    </select>
                 </div>
 
+                {/*4- Integridad cutánea */}
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> Evaluación cutánea y cicatrices</h3>
+                    <label style={styles.label}>Integridad Cutánea General: </label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="radio" value="Normal" {...register("integridadCutanea")} />
+                            Normal
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="radio" value="Alterada" {...register("integridadCutanea")} />
+                            Alterada (Selecciona los detalles)
+                        </label>
+
+                    </div>
+
+                    <label style={styles.label}>Hallazgos Específicos: </label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Cicatriz Quirúrgica" {...register("hallazgosEspecificos")} />
+                            Cicatriz Quirúrgica
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Eritema (Enrojecimiento)" {...register("hallazgosEspecificos")} />
+                            Eritema (Enrojecimiento)
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Herida Abierta/úlcera" {...register("hallazgosEspecificos")} />
+                            Herida Abierta/Ulcera
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Otro especificado en palpación" {...register("hallazgosEspecificos")} />
+                            Otros (Especificar en Palpación)
+                        </label>
+                    </div>
+                </div>
+
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> Evaluación Muscular y ROM</h3>
+                    <label style={styles.label}>Rango de Movimiento (ROM) ACTIVO (Grados):</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("rangoMovimientoActivo")}
+                        placeholder="Ej. Hombro Flexión: 150°, Rodilla Ext: -5°"
+                    />
+                    <label style={styles.label}>Rango de Movimiento (ROM) PASIVO (Grados):</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("rangoMovimientoPasivo")}
+                        placeholder="Ej. Hombro Flexión: 170°, Rodilla Ext: 0°"
+                    />
+                    <label style={styles.label}>Fuerza Muscular (Escala Daniels 0-5):</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("fuerzaMuscular")}
+                        placeholder="Ej. Cuadriceps 4/5, Deltoides 3/5"
+                    />
+                    <label style={styles.label}>Perimetros Musculares (cm) / Edema:</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("perimetrosMusculares")}
+                        placeholder="Ej. Muslo 45cm / 43 cm"
+                    />
+                    <label style={styles.label}>Tono Muscular: </label>
+                    <div style={styles.checkboxContainer}>
+                        <label style={styles.checkboxItem}>
+                            <input type="radio" value="Normal" {...register("tonoMuscular")} />
+                            Normal
+                        </label>
+                        <label style={styles.checkboxItem}>
+                            <input type="radio" value="Hipotónico" {...register("tonoMuscular")} />
+                            Hipotónico
+                        </label>
+                        <label style={styles.checkboxItem}>
+                            <input type="radio" value="Hipertónico / Espástico" {...register("tonoMuscular")} />
+                            Hipertónico / Espástico
+                        </label>
+                    </div>
+                </div>
 
 
                 {/* SECCIÓN 2: CONSULTA MÉDICA */}
                 <div style={styles.section}>
-                    <h3>📋 Detalle de la Consulta</h3>
-
+                    <h3 style={{color: '#00a8cc'}}> Detalle de la consulta</h3>
                     <label style={styles.label}>Motivo de Consulta:</label>
                     <textarea
                         style={styles.textarea}

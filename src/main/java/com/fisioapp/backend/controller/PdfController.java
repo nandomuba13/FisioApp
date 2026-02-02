@@ -1,6 +1,6 @@
 package com.fisioapp.backend.controller;
 
-import com.fisioapp.backend.dto.DtoRequest; // Asegúrate que tu DTO se llame así o ConsultaDTO
+import com.fisioapp.backend.dto.DtoRequest;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -59,7 +59,7 @@ public class PdfController {
 
             // Motivo
             document.add(new Paragraph("Motivo de Consulta:", fontSubtitulo));
-            document.add(new Paragraph(datos.getMotivoConsulta(), fontTexto));
+            document.add(new Paragraph((datos.getMotivoConsulta() != null ? datos.getMotivoConsulta() : "No descrito"), fontTexto));
             document.add(new Paragraph("------------------------------------------------"));
 
             // Antecedentes
@@ -130,43 +130,114 @@ public class PdfController {
             // --- EXPLORACIÓN FÍSICA ---
             document.add(new Paragraph("Exploración Física y Funcional", fontSubtitulo));
 
-            // Frecuencia Cardiaca
+            // Signos Vitales
             document.add(new Paragraph("Frecuencia Cardiaca: " +
                     (datos.getFrecuenciaCardiaca() != null ? datos.getFrecuenciaCardiaca() + " lpm" : "No registrado"), fontTexto));
 
-            // Frecuencia Respiratoria
             document.add(new Paragraph("Frecuencia Respiratoria: " +
                     (datos.getFrecuenciaRespiratoria() != null ? datos.getFrecuenciaRespiratoria() + " rpm" : "No registrado"), fontTexto));
 
-            // Temperatura
             document.add(new Paragraph("Temperatura Corporal: " +
                     (datos.getTemperaturaCorporal() != null ? datos.getTemperaturaCorporal() + " °C" : "No registrado"), fontTexto));
 
-            // Saturación
             document.add(new Paragraph("Saturación de Oxígeno (SpO2): " +
                     (datos.getSaturacionOxigeno() != null ? datos.getSaturacionOxigeno() + " %" : "No registrado"), fontTexto));
 
-            // Presión Arterial (Corregido nombres de variables)
             String paTexto = "No registrado";
             if (datos.getPresionArterialSistolica() != null && datos.getPresionArterialDiastolica() != null){
                 paTexto = datos.getPresionArterialSistolica() + "/" + datos.getPresionArterialDiastolica() + " mmHg";
             }
             document.add(new Paragraph("Presión Arterial (PA): " + paTexto, fontTexto));
+            document.add(new Paragraph(" "));
+
+            // Balance y Coordinación
+            document.add(new Paragraph("Balance y Coordinación (0-10)", fontNegrita));
+            document.add(new Paragraph("Equilibrio Estático: " +
+                    (datos.getEquilibrioEstatico() != null ? datos.getEquilibrioEstatico() : "-"),fontTexto));
+            document.add(new Paragraph("Equilibrio Dinámico: " +
+                    (datos.getEquilibrioDinamico() != null ? datos.getEquilibrioDinamico() : "-"),fontTexto));
+            document.add(new Paragraph("Coordinación Motora: " +
+                    (datos.getCoordinacionMotora() != null ? datos.getCoordinacionMotora() : "-"),fontTexto));
+            document.add(new Paragraph("Propiocepción: " +
+                    (datos.getPropiocepcion() != null ? datos.getPropiocepcion() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+
+            // Evaluación Respiratoria y Circulatoria
+            document.add(new Paragraph("Evaluación Respiratoria y Circulatoria", fontSubtitulo));
+
+            if (datos.getExpansionToracica() != null && !datos.getExpansionToracica().isEmpty()){
+                String texto = String.join(", ", datos.getExpansionToracica());
+                document.add(new Paragraph("Expansión Torácica: " + texto, fontTexto));
+            }
+
+            if (datos.getColoracionPiel() != null && !datos.getColoracionPiel().isEmpty()){
+                String texto = String.join(", ", datos.getColoracionPiel());
+                document.add(new Paragraph("Coloración de Piel: " + texto, fontTexto));
+            }
+
+            if (datos.getLlenadoCapilar() != null && !datos.getLlenadoCapilar().isEmpty()){
+                String texto = String.join(", ", datos.getLlenadoCapilar());
+                document.add(new Paragraph("Llenado Capilar: " + texto, fontTexto));
+            }
+
+            document.add(new Paragraph("Edema: " +
+                    (datos.getPresenciaEdema() != null ? datos.getPresenciaEdema() : "No especificado"), fontTexto ));
+            document.add(new Paragraph(" "));
+
+            // Integridad Cutánea
+            document.add(new Paragraph("Integridad Cutánea General:", fontSubtitulo));
+            if (datos.getIntegridadCutanea() != null) {
+                document.add(new Paragraph("Estado: " + datos.getIntegridadCutanea(), fontTexto));
+
+                if (datos.getIntegridadCutanea().equals("Alterada")) {
+                    document.add(new Paragraph("Hallazgos Específicos: ", fontNegrita));
+
+                    // AHORA SÍ: Usamos String.join para unir la lista limpiamente
+                    if (datos.getHallazgosEspecificos() != null && !datos.getHallazgosEspecificos().isEmpty()) {
+                        String hallazgos = String.join(", ", datos.getHallazgosEspecificos());
+                        document.add(new Paragraph(hallazgos, fontTexto));
+                    } else {
+                        document.add(new Paragraph("No especificados", fontTexto));
+                    }
+                }
+            }
 
             document.add(new Paragraph(" "));
 
+            // Evaluación Muscular y ROM
+            document.add(new Paragraph("Evaluación Muscular y ROM", fontSubtitulo));
+
+            document.add(new Paragraph("ROM ACTIVO (grados): " +
+                    (datos.getRangoMovimientoActivo() != null ? datos.getRangoMovimientoActivo() : "-"), fontTexto));
+
+            document.add(new Paragraph("ROM PASIVO (grados): " +
+                    (datos.getRangoMovimientoPasivo() != null ? datos.getRangoMovimientoPasivo() : "-"), fontTexto));
+
+            document.add(new Paragraph("Fuerza Muscular (Daniels): " +
+                    (datos.getFuerzaMuscular() != null ? datos.getFuerzaMuscular() : "-"), fontTexto));
+
+            document.add(new Paragraph("Perímetros / Edema: " +
+                    (datos.getPerimetrosMusculares() != null ? datos.getPerimetrosMusculares() : "-"), fontTexto));
+
+            document.add(new Paragraph("Tono Muscular: " +
+                    (datos.getTonoMuscular() != null ? datos.getTonoMuscular() : "No evaluado"), fontTexto));
+
+            document.add(new Paragraph("------------------------------------------------"));
+
             // --- DIAGNÓSTICO Y PLAN ---
             document.add(new Paragraph("Diagnóstico Fisioterapéutico:", fontSubtitulo));
-            Paragraph diagnostico = new Paragraph(datos.getDiagnostico(), fontTexto);
+            Paragraph diagnostico = new Paragraph(
+                    (datos.getDiagnostico() != null ? datos.getDiagnostico() : "Pendiente"), fontTexto);
             diagnostico.setSpacingAfter(10);
             document.add(diagnostico);
 
             // Plan de Tratamiento
             PdfPTable tablaPlan = new PdfPTable(1);
-            tablaPlan.setWidthPercentage(100); // Asegurar que ocupe todo el ancho
+            tablaPlan.setWidthPercentage(100);
             PdfPCell celdaPlan = new PdfPCell();
             celdaPlan.addElement(new Paragraph("PLAN DE TRATAMIENTO", fontNegrita));
-            celdaPlan.addElement(new Paragraph(datos.getTratamiento(), fontTexto));
+            celdaPlan.addElement(new Paragraph(
+                    (datos.getTratamiento() != null ? datos.getTratamiento() : "Pendiente"), fontTexto));
             celdaPlan.setPadding(15);
             celdaPlan.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
             tablaPlan.addCell(celdaPlan);
