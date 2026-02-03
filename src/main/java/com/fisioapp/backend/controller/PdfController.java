@@ -17,6 +17,12 @@ public class PdfController {
 
     @PostMapping("/generar")
     public ResponseEntity<byte[]> generarPdf(@RequestBody DtoRequest datos) {
+        // --- CÓDIGO ESPÍA (Debug) ---
+        System.out.println("================ RECIBIENDO SOLICITUD ================");
+        System.out.println("Nombre Paciente: " + datos.getNombrePaciente());
+        System.out.println("Firma Paciente (Texto): " + datos.getFirmaPaciente()); // ¿Qué sale aquí?
+        System.out.println("Firma Fisio (Texto): " + datos.getFirmaFisio());       // ¿Y aquí?
+        System.out.println("======================================================");
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Document document = new Document();
@@ -37,20 +43,59 @@ public class PdfController {
 
             document.add(new Paragraph("Fecha de Consulta: " + java.time.LocalDate.now(), fontTexto));
             document.add(new Paragraph(" ")); // Espacio vacío
+            //1- Info del fisio
+            PdfPTable tablaFisio = new PdfPTable(3);
+            tablaFisio.setWidthPercentage(100);
+
+            // Celda 1: Nombre
+            PdfPCell celdaNombreF = new PdfPCell(new Paragraph("Fisioterapeuta: " + datos.getNombreFisio(), fontTexto));
+            celdaNombreF.setPadding(10);
+            tablaFisio.addCell(celdaNombreF);
+            // Celda 2: Cedula
+            PdfPCell celdacel = new PdfPCell(new Paragraph("Cédula Profesional: " + datos.getCedulaProfesional(), fontTexto));
+            celdacel.setPadding(10);
+            tablaFisio.addCell(celdacel);
+            //Celda 3 Clinica
+            PdfPCell celdaClinica = new PdfPCell(new Paragraph("Clínica: "+datos.getClinica(),fontTexto));
+            celdaClinica.setPadding(10);
+            tablaFisio.addCell(celdaClinica);
+
+            document.add(tablaFisio);
+            document.add(new Paragraph(" "));
 
             // --- 2. TABLA DE DATOS DEL PACIENTE ---
             PdfPTable tablaPaciente = new PdfPTable(2);
             tablaPaciente.setWidthPercentage(100);
 
-            // Celda 1: Nombre
             PdfPCell celdaNombre = new PdfPCell(new Paragraph("Paciente: " + datos.getNombrePaciente(), fontTexto));
-            celdaNombre.setPadding(10);
+            celdaNombre.setPadding(6);
             tablaPaciente.addCell(celdaNombre);
 
-            // Celda 2: Teléfono
+            PdfPCell celdaEdad = new PdfPCell(new Paragraph("Edad: " +
+                    (datos.getEdad() != null ? datos.getEdad() + " años" : ""), fontTexto));
+            celdaEdad.setPadding(6);
+            tablaPaciente.addCell(celdaEdad);
+
+            // Fila 2: Sexo y Teléfono
+            PdfPCell celdaSexo = new PdfPCell(new Paragraph("Sexo: " +
+                    (datos.getSexo() != null ? datos.getSexo() : ""), fontTexto));
+            celdaSexo.setPadding(6);
+            tablaPaciente.addCell(celdaSexo);
+
             PdfPCell celdaTel = new PdfPCell(new Paragraph("Teléfono: " + datos.getTelefono(), fontTexto));
-            celdaTel.setPadding(10);
+            celdaTel.setPadding(6);
             tablaPaciente.addCell(celdaTel);
+
+            // Fila 3: Ocupación y Lateralidad
+            PdfPCell celdaOcupacion = new PdfPCell(new Paragraph("Ocupación: " +
+                    (datos.getOcupacion() != null ? datos.getOcupacion() : ""), fontTexto));
+            celdaOcupacion.setPadding(6);
+            tablaPaciente.addCell(celdaOcupacion);
+
+            PdfPCell celdaLateralidad = new PdfPCell(new Paragraph("Lateralidad: " +
+                    (datos.getLateralidad() != null ? datos.getLateralidad() : ""), fontTexto));
+            celdaLateralidad.setPadding(6);
+            tablaPaciente.addCell(celdaLateralidad);
 
             document.add(tablaPaciente);
             document.add(new Paragraph(" "));
@@ -60,6 +105,8 @@ public class PdfController {
             // Motivo
             document.add(new Paragraph("Motivo de Consulta:", fontSubtitulo));
             document.add(new Paragraph((datos.getMotivoConsulta() != null ? datos.getMotivoConsulta() : "No descrito"), fontTexto));
+            document.add(new Paragraph("Padecimiento Actual Inicio, Mecanismo y Evolución",fontTexto));
+            document.add(new Paragraph((datos.getPadecimientoActual() != null ? datos.getPadecimientoActual() : "No descrito"), fontTexto));
             document.add(new Paragraph("------------------------------------------------"));
 
             // Antecedentes
@@ -219,8 +266,65 @@ public class PdfController {
             document.add(new Paragraph("Perímetros / Edema: " +
                     (datos.getPerimetrosMusculares() != null ? datos.getPerimetrosMusculares() : "-"), fontTexto));
 
-            document.add(new Paragraph("Tono Muscular: " +
-                    (datos.getTonoMuscular() != null ? datos.getTonoMuscular() : "No evaluado"), fontTexto));
+         //7 - Evaluación postura
+            document.add(new Paragraph("Evaluación de la Postura y Marcha: ",fontSubtitulo));
+
+            document.add(new Paragraph("Patrón de Marcha / Deambulación: " +
+                    (datos.getPatronMarcha() != null ? datos.getPatronMarcha() : "No especificado"), fontTexto ));
+
+            document.add(new Paragraph("Traslados: "+
+                    (datos.getTraslados() != null ? datos.getTraslados() : "No evaluado"), fontTexto));
+
+            if (datos.getPostura() != null && !datos.getPostura().isEmpty()) {
+                // Unimos la lista (Ej: "Escoliosis, Otra")
+                String textoPostura = String.join(", ", datos.getPostura());
+                document.add(new Paragraph("Hallazgos: " + textoPostura, fontTexto));
+
+                // Si seleccionó "Otra", imprimimos el detalle
+                if (datos.getPostura().contains("Otra")) {
+                    document.add(new Paragraph("Detalle de otra anomalía: " +
+                            (datos.getOtraPosturaDetalle() != null ? datos.getOtraPosturaDetalle() : "-"), fontTexto));
+                }
+            } else {
+                document.add(new Paragraph("Sin hallazgos posturales registrados.", fontTexto));
+            }
+            document.add(new Paragraph("------------------------------------------------"));
+            // 8- Valoración Funcional Global
+            document.add(new Paragraph("Valoración Funcional Global (0=Dependiente, 10=Independiente",fontSubtitulo));
+            document.add(new Paragraph(""));
+            document.add(new Paragraph("Nivel de Independencia en AVDs: " +
+                    (datos.getNivelIndependencia() != null ? datos.getNivelIndependencia() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Transferencias (Cama - Silla): " +
+                    (datos.getTransferencias() != null ? datos.getTransferencias() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Subir y Bajar Escaleras: " +
+                    (datos.getSubirYbajarEscaleras() != null ? datos.getSubirYbajarEscaleras() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Marcha Funcional (distancia, velocidad): " +
+                    (datos.getMarchaFuncional() != null ? datos.getMarchaFuncional() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Alcance Manual (capacidad de agarre / mover): " +
+                    (datos.getAlcanceManual() != null ? datos.getAlcanceManual() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Tolerancia al Esfuerzo (funcional) " +
+                    (datos.getToleranciaEsfuerzo() != null ? datos.getToleranciaEsfuerzo() : "-"),fontTexto));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("------------------------------------------------"));
+            //9. Hallazgos Adicionales
+            document.add(new Paragraph("Hallazgos Adicionales",fontSubtitulo));
+            document.add(new Paragraph("Escala de Equilibrio: ",fontTexto));
+            document.add(new Paragraph(datos.getEscalaEquilibrio(),fontTexto));
+            document.add(new Paragraph("Grado de Limitación Funcional: " +
+                    (datos.getPatronMarcha() != null ? datos.getGradoLimitacion() : "No especificado"), fontTexto ));
+            document.add(new Paragraph("Pruebas Especiales Positivas: ",fontTexto));
+            document.add(new Paragraph(datos.getPruebasEspeciales(),fontTexto));
+            document.add(new Paragraph("Observaciones Generales del Fisioterapeuta: ",fontTexto));
+            document.add(new Paragraph(datos.getObservaciones(),fontTexto));
+            document.add(new Paragraph("Hallazgos a la Palpacion: ",fontTexto));
+            document.add(new Paragraph(datos.getHallazgosPalpacion(),fontTexto));
+            document.add(new Paragraph("Limitaciones en Actividades de la Vida Diaria (AVDs) detallado: ",fontTexto));
+            document.add(new Paragraph(datos.getLimitacionesActividades(),fontTexto));
 
             document.add(new Paragraph("------------------------------------------------"));
 
@@ -246,11 +350,73 @@ public class PdfController {
 
             // --- 4. FIRMA ---
             document.add(new Paragraph(" "));
+            // ... (código anterior del Plan de Tratamiento) ...
+
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("------------------------------------------------"));
+
+            // --- SECCIÓN CONSENTIMIENTO ---
+            document.add(new Paragraph("Consentimiento y Conformidad", fontSubtitulo));
+            document.add(new Paragraph(" "));
+
+            // Cuadro de texto legal
+            PdfPTable tablaLegal = new PdfPTable(1);
+            tablaLegal.setWidthPercentage(100);
+            PdfPCell celdaLegal = new PdfPCell();
+            celdaLegal.addElement(new Paragraph(
+                    "Otorgo mi consentimiento libre e informado para la valoración, diagnóstico y tratamiento de fisioterapia. " +
+                            "Entiendo la naturaleza y los posibles riesgos/beneficios de los procedimientos. He recibido explicaciones sobre mi " +
+                            "condición y el plan terapéutico. Acepto la toma de fotografías clínicas para fines de documentación de mi expediente.",
+                    FontFactory.getFont(FontFactory.HELVETICA, 10, java.awt.Color.DARK_GRAY)));
+            celdaLegal.setPadding(10);
+            celdaLegal.setBorderColor(java.awt.Color.GREEN); // Borde verde como en tu diseño
+            celdaLegal.setBorderWidth(1f);
+            tablaLegal.addCell(celdaLegal);
+            document.add(tablaLegal);
+
+            document.add(new Paragraph(" "));
+
+            // Estado del Checkbox
+            String estadoConsentimiento = datos.isConsentimientoInformado() ? "[ X ] ACEPTADO" : "[   ] NO ACEPTADO";
+            document.add(new Paragraph(estadoConsentimiento + " He leído y acepto el consentimiento informado.", fontNegrita));
             document.add(new Paragraph(" "));
             document.add(new Paragraph(" "));
-            Paragraph firma = new Paragraph("__________________________\nFirma del Fisioterapeuta", fontTexto);
-            firma.setAlignment(Element.ALIGN_CENTER);
-            document.add(firma);
+
+            // --- TABLA DE FIRMAS (Lado a Lado) ---
+            PdfPTable tablaFirmas = new PdfPTable(2);
+            tablaFirmas.setWidthPercentage(100);
+            tablaFirmas.setSpacingBefore(20f);
+
+            // Firma Paciente
+            PdfPCell celdaFirmaP = new PdfPCell();
+            celdaFirmaP.setBorder(Rectangle.TOP); // Solo línea superior
+            celdaFirmaP.setBorderWidthTop(1f);
+            celdaFirmaP.setBorderColorTop(java.awt.Color.BLACK);
+            celdaFirmaP.addElement(new Paragraph(
+                    (datos.getFirmaPaciente() != null ? datos.getFirmaPaciente() : ""), fontTexto));
+            celdaFirmaP.addElement(new Paragraph("Firma del Paciente o Responsable", fontNegrita));
+            celdaFirmaP.setPaddingTop(10);
+            celdaFirmaP.setPaddingRight(20);
+
+            // Firma Fisio
+            PdfPCell celdaFirmaF = new PdfPCell();
+            celdaFirmaF.setBorder(Rectangle.TOP); // Solo línea superior
+            celdaFirmaF.setBorderWidthTop(1f);
+            celdaFirmaF.setBorderColorTop(java.awt.Color.BLACK);
+            celdaFirmaF.addElement(new Paragraph(
+                    (datos.getFirmaFisio() != null ? datos.getFirmaFisio() : ""), fontTexto));
+            celdaFirmaF.addElement(new Paragraph("Firma del Fisioterapeuta Tratante", fontNegrita));
+            celdaFirmaF.setPaddingTop(10);
+            celdaFirmaF.setPaddingLeft(20);
+
+            // Añadir celdas con un espacio en medio (truco visual usando celdas vacias si fuera necesario, pero aquí usaremos padding)
+            tablaFirmas.addCell(celdaFirmaP);
+            tablaFirmas.addCell(celdaFirmaF);
+
+            document.add(tablaFirmas);
+
+            document.close();
+            // ... (Resto del return)
 
             document.close();
 

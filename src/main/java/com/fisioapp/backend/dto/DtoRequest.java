@@ -11,9 +11,10 @@ public class DtoRequest {
     /*Paciente*/
     private String nombrePaciente;
     private String telefono;
-    private int sexo;
+    private String sexo;
     private String lateralidad;
     private String ocupacion;
+    private String edad;
 
     /*Diagnosticos*/
     private String motivoConsulta;
@@ -47,7 +48,6 @@ public class DtoRequest {
     private Integer equilibrioDinamico;
     private Integer coordinacionMotora;
 
-    // CORRECCIÓN 1: Sin acento para coincidir con React ("propiocepcion")
     private Integer propiocepcion;
 
     //Evaluación Respiratoria
@@ -58,24 +58,188 @@ public class DtoRequest {
 
     //Evaluación cutánea
     private String integridadCutanea; // Es String porque es Radio Button (solo uno)
-
-    // CORRECCIÓN 2: List<String> porque son Checkboxes (pueden ser varios hallazgos)
     private List<String> hallazgosEspecificos;
 
     //Evaluación Muscular
     private String rangoMovimientoActivo;
     private String rangoMovimientoPasivo;
     private String fuerzaMuscular;
-
-    // CORRECCIÓN 3: Plural "perimetrosMusculares" para coincidir con React
     private String perimetrosMusculares;
-
     private String tonoMuscular;
-
+    //7. Evaluación De la postura
+    private String patronMarcha;
+    private String Traslados;
+    private List<String> Postura;
+    private String otraPosturaDetalle;
+    //8. Valoración Funcional Global
+    private Integer nivelIndependencia, transferencias,subirYbajarEscaleras,marchaFuncional,alcanceManual,toleranciaEsfuerzo;
+    //9. Hallazgos Adicionales
+    private String escalaEquilibrio, gradoLimitacion,pruebasEspeciales,observaciones,hallazgosPalpacion,limitacionesActividades;
+    private boolean consentimientoInformado;
+    private String firmaPaciente,firmaFisio;
 
     /* --- GETTERS Y SETTERS --- */
 
-    // Genera o actualiza estos getters/setters específicamente:
+    public void setEdad(String edad) {
+        this.edad = edad;
+    }
+
+    public void setNivelIndependencia(Integer nivelIndependencia) {
+        this.nivelIndependencia = nivelIndependencia;
+    }
+
+    public void setTransferencias(Integer transferencias) {
+        this.transferencias = transferencias;
+    }
+
+    public void setSubirYbajarEscaleras(Integer subirYbajarEscaleras) {
+        this.subirYbajarEscaleras = subirYbajarEscaleras;
+    }
+
+    public void setMarchaFuncional(Integer marchaFuncional) {
+        this.marchaFuncional = marchaFuncional;
+    }
+
+    public void setAlcanceManual(Integer alcanceManual) {
+        this.alcanceManual = alcanceManual;
+    }
+
+    public void setToleranciaEsfuerzo(Integer toleranciaEsfuerzo) {
+        this.toleranciaEsfuerzo = toleranciaEsfuerzo;
+    }
+
+    public void setEscalaEquilibrio(String escalaEquilibrio) {
+        this.escalaEquilibrio = escalaEquilibrio;
+    }
+
+    public void setGradoLimitacion(String gradoLimitacion) {
+        this.gradoLimitacion = gradoLimitacion;
+    }
+
+    public void setPruebasEspeciales(String pruebasEspeciales) {
+        this.pruebasEspeciales = pruebasEspeciales;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public void setHallazgosPalpacion(String hallazgosPalpacion) {
+        this.hallazgosPalpacion = hallazgosPalpacion;
+    }
+
+    public void setLimitacionesActividades(String limitacionesActividades) {
+        this.limitacionesActividades = limitacionesActividades;
+    }
+
+    public void setConsentimientoInformado(boolean consentimientoInformado) {
+        this.consentimientoInformado = consentimientoInformado;
+    }
+
+    public void setFirmaPaciente(String firmaPaciente) {
+        this.firmaPaciente = firmaPaciente;
+    }
+
+    public void setFirmaFisio(String firmaFisio) {
+        this.firmaFisio = firmaFisio;
+    }
+
+    public boolean isConsentimientoInformado() {
+        return consentimientoInformado;
+    }
+
+    public String getFirmaPaciente() {
+        return firmaPaciente;
+    }
+
+    public String getFirmaFisio() {
+        return firmaFisio;
+    }
+
+    public String getEdad() {
+        return edad;
+    }
+
+    public String getEscalaEquilibrio() {
+        return escalaEquilibrio;
+    }
+
+    public String getGradoLimitacion() {
+        return gradoLimitacion;
+    }
+
+    public String getPruebasEspeciales() {
+        return pruebasEspeciales;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public String getHallazgosPalpacion() {
+        return hallazgosPalpacion;
+    }
+
+    public String getLimitacionesActividades() {
+        return limitacionesActividades;
+    }
+
+    public Integer getNivelIndependencia() {
+        return nivelIndependencia;
+    }
+
+    public Integer getTransferencias() {
+        return transferencias;
+    }
+
+    public Integer getSubirYbajarEscaleras() {
+        return subirYbajarEscaleras;
+    }
+
+    public Integer getMarchaFuncional() {
+        return marchaFuncional;
+    }
+
+    public Integer getAlcanceManual() {
+        return alcanceManual;
+    }
+
+    public Integer getToleranciaEsfuerzo() {
+        return toleranciaEsfuerzo;
+    }
+
+    public String getOtraPosturaDetalle() {
+        return otraPosturaDetalle;
+    }
+
+    public void setOtraPosturaDetalle(String otraPosturaDetalle) {
+        this.otraPosturaDetalle = otraPosturaDetalle;
+    }
+
+    public String getPatronMarcha() {
+        return patronMarcha;
+    }
+
+    public void setPatronMarcha(String patronMarcha) {
+        this.patronMarcha = patronMarcha;
+    }
+
+    public String getTraslados() {
+        return Traslados;
+    }
+
+    public void setTraslados(String traslados) {
+        Traslados = traslados;
+    }
+
+    public List<String> getPostura() {
+        return Postura;
+    }
+
+    public void setPostura(List<String> postura) {
+        Postura = postura;
+    }
+// Genera o actualiza estos getters/setters específicamente:
 
     public List<String> getHallazgosEspecificos() { return hallazgosEspecificos; }
     public void setHallazgosEspecificos(List<String> hallazgosEspecificos) { this.hallazgosEspecificos = hallazgosEspecificos; }
@@ -107,8 +271,8 @@ public class DtoRequest {
     public void setNombrePaciente(String nombrePaciente) { this.nombrePaciente = nombrePaciente; }
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
-    public int getSexo() { return sexo; }
-    public void setSexo(int sexo) { this.sexo = sexo; }
+    public String getSexo() { return sexo; }
+    public void setSexo(String sexo) { this.sexo = sexo; }
     public String getLateralidad() { return lateralidad; }
     public void setLateralidad(String lateralidad) { this.lateralidad = lateralidad; }
     public String getOcupacion() { return ocupacion; }

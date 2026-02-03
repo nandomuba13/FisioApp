@@ -150,6 +150,34 @@ const styles = {
         textAlign: 'center',
         fontSize: '18px',
         outline: 'none'
+    },
+    legalBox: {
+        border: '1px solid #27ae60',
+        backgroundColor: '#f9fff9',
+        padding: '15px',
+        borderRadius: '8px',
+        color: '#2c3e50',
+        fontSize: '14px',
+        lineHeight: '1.5',
+        marginBottom: '15px'
+    },
+    signatureBox: {
+        border: '2px solid #00a8cc', // Borde azulito
+        borderRadius: '10px',
+        padding: '10px',
+        height: '100px', // Altura fija para que parezca cuadro de firma
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end' // El input se va al fondo
+    },
+    signatureInput: {
+        border: 'none',
+        borderBottom: '1px solid #ccc',
+        width: '100%',
+        fontSize: '18px',
+        fontFamily: 'Cursive, sans-serif', // Fuente estilo firma (si el navegador la tiene)
+        outline: 'none',
+        background: 'transparent'
     }
 };
 
@@ -161,6 +189,7 @@ function App() {
             habitosToxicos: [],
             tipoDolor: [],
             ritmoDolor: [],
+            Postura: [],
 
             // Nuevos checkboxes (IMPORTANTE agregarlos aquí)
             expansionToracica: [],
@@ -168,10 +197,15 @@ function App() {
             llenadoCapilar: [],
             hallazgosEspecificos: [],
 
+
             // --- TEXTOS ÚNICOS (Radios, Selects, Inputs) ---
+            otraPosturaDetalle: "",
             tonoMuscular: "",        // Radio
             integridadCutanea: "",   // Radio
             presenciaEdema: "",      // Select
+            Traslados: "", //Select
+            patronMarcha: "", //Select
+            gradoLimitacion: "", //Select
 
             // Textareas y otros
             rangoMovimientoActivo: "",
@@ -191,6 +225,14 @@ function App() {
     const equilibrioDinamico = watch("equilibrioDinamico",10);
     const coordinacionMotora = watch("coordinacionMotora",10);
     const propiocepcion = watch("propiocepcion",10);
+    const seleccionPostura = watch("Postura") || [];
+    const mostrarInputOtra = seleccionPostura.includes("Otra");
+    const nivelIndependencia = watch("nivelIndependencia", 5);
+    const transferencias = watch("transferencias",5);
+    const subirYbajarEscaleras = watch("subirYbajarEscaleras",5);
+    const marchaFuncional = watch("marchaFuncional", 5);
+    const alcanceManual = watch("alcanceManual", 5);
+    const toleranciaEsfuerzo = watch("toleranciaEsfuerzo",5);
 
 
 
@@ -225,26 +267,124 @@ function App() {
             <h1 style={styles.header}>Fisioterapia - Historia Clínica</h1>
 
             <form onSubmit={handleSubmit(onSubmit)}>
+                {/*Datos del fisio*/}
+                <div style={styles.section}>
+                    <h3>👤 Información del Profesional</h3>
+
+                    <label style={styles.label}>Nombre Completo:</label>
+                    <input
+                        style={styles.input}
+                        {...register("nombreFisio", { required: true })}
+                        placeholder="Ej: Brenda Fernanda Muñoz Barragán"
+                    />
+
+                    <label style={styles.label}>Cédula Profesional:</label>
+                    <input
+                        style={styles.input}
+                        {...register("cedulaProfesional")}
+                        placeholder="Ej: 12345678"
+                    />
+                    <label style={styles.label}>Clínica:</label>
+                    <input
+                        style={styles.input}
+                        {...register("clinica")}
+                        placeholder="Ej: Fisiovida"
+                    />
+                </div>
 
                 {/* SECCIÓN 1: DATOS PERSONALES */}
                 <div style={styles.section}>
                     <h3>👤 Datos del Paciente</h3>
 
-                    <label style={styles.label}>Nombre Completo:</label>
-                    <input
-                        style={styles.input}
-                        {...register("nombrePaciente", { required: true })}
-                        placeholder="Ej: Juan Muñoz"
-                    />
+                    {/* FILA 1: Nombre y Edad */}
+                    <div style={styles.checkboxContainer}>
+                        <div style={{width: '100%'}}>
+                            <label style={styles.label}>Nombre Completo:</label>
+                            <input
+                                style={styles.input}
+                                {...register("nombrePaciente", { required: true })}
+                                placeholder="Nombre completo"
+                            />
+                        </div>
+                        <div style={{width: '100%'}}>
+                            <label style={styles.label}>Edad:</label>
+                            <input
+                                type="number"
+                                style={styles.input}
+                                {...register("edad")}
+                                placeholder="Ej: 25"
+                            />
+                        </div>
+                    </div>
 
-                    <label style={styles.label}>Teléfono:</label>
-                    <input
-                        style={styles.input}
-                        {...register("telefono")}
-                        placeholder="Ej: 33 1234 5678"
+                    {/* FILA 2: Sexo y Teléfono */}
+                    <div style={styles.checkboxContainer}>
+                        {/* Sexo (Radio Buttons) */}
+                        <div style={{width: '100%'}}>
+                            <label style={styles.label}>Sexo:</label>
+                            <div style={{display: 'flex', gap: '15px', marginTop: '10px'}}>
+                                <label style={styles.checkboxItem}>
+                                    <input type="radio" value="Masculino" {...register("sexo")} />
+                                    Masc.
+                                </label>
+                                <label style={styles.checkboxItem}>
+                                    <input type="radio" value="Femenino" {...register("sexo")} />
+                                    Fem.
+                                </label>
+                                <label style={styles.checkboxItem}>
+                                    <input type="radio" value="Otro" {...register("sexo")} />
+                                    Otro
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style={{width: '100%'}}>
+                            <label style={styles.label}>Teléfono:</label>
+                            <input
+                                style={styles.input}
+                                {...register("telefono")}
+                                placeholder="Ej: 33 1234 5678"
+                            />
+                        </div>
+                    </div>
+
+                    {/* FILA 3: Ocupación y Lateralidad */}
+                    <div style={styles.checkboxContainer}>
+                        <div style={{width: '100%'}}>
+                            <label style={styles.label}>Ocupación:</label>
+                            <input
+                                style={styles.input}
+                                {...register("ocupacion")}
+                                placeholder="Ej: Estudiante, Oficina..."
+                            />
+                        </div>
+
+                        <div style={{width: '100%'}}>
+                            <label style={styles.label}>Lateralidad:</label>
+                            <select style={styles.selectInput} {...register("lateralidad")}>
+                                <option value="">-- Seleccionar --</option>
+                                <option value="Diestro (Derecho)">Diestro (Derecho)</option>
+                                <option value="Zurdo (Izquierdo)">Zurdo (Izquierdo)</option>
+                                <option value="Ambidextro">Ambidextro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> Detalle de la consulta</h3>
+                    <label style={styles.label}>Motivo de Consulta:</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("motivoConsulta")}
+                        placeholder="Describe qué le duele, desde cuándo, tipo de dolor..."
+                    />
+                    <label style={styles.label}>Motivo de Consulta:</label>
+                    <textarea
+                        style={styles.textarea}
+                        {...register("padecimientoActual")}
+                        placeholder="¿Cuándo y Cómo inició? ¿Hubo un evento traumático?, ¿Qué lo agravia o alivia?"
                     />
                 </div>
-
                 {/* --- SECCIÓN: ANTECEDENTES (Checkboxes estilo caja) --- */}
                 <div style={styles.section}>
                     <h3 style={{color: '#00a8cc'}}>Antecedentes Médicos Patológicos</h3>
@@ -751,18 +891,209 @@ function App() {
                         </label>
                     </div>
                 </div>
+                <div style={styles.section}>
+                    <label style={styles.label}>Traslados (Cama, silla, etc.): :</label>
+                    <select style={styles.selectInput} {...register("Traslados")}>
+                        <option value="">-- Seleccione una opción --</option>
+                        <option value="Independiente">Independiente</option>
+                        <option value="Requiere supervisión">Requiere supervisión</option>
+                        <option value="Requiere ayuda mínima (1p)">Requiere ayuda mínima (1p)</option>
+                        <option value="Requiere ayuda máxima (2p)">Requiere ayuda máxima (2p)</option>
+                        <option value="No realiza">No realiza</option>
+                    </select>
+
+                    <label style={styles.label}>Patrón de Marcha / Deambulación:</label>
+                    {/* El elemento <select> crea el menú desplegable */}
+                    <select style={styles.selectInput} {...register("patronMarcha")}>
+                        <option value="">-- Seleccione una opción --</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Antálgica">Antálgica (por dolor)</option>
+                        <option value="Trendelenburg">Trendelenburg</option>
+                        <option value="Steppage">Steppage</option>
+                        <option value="Atáxica">Atáxica</option>
+                        <option value="Clausicación">Clausicación (Vascular)</option>
+                        <option value="Otros especificados a continuación: ">Otros (específicar en inspección)</option>
+                    </select>
+                    <label style={styles.label}>Postura y Alineación (Inspección):</label>
+                    <div style={styles.checkboxContainer}>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Normal" {...register("Postura")} />
+                            Normal
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Escoliosis" {...register("Postura")} />
+                            Escoliosis
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Cifosis Aumentada" {...register("Postura")} />
+                            Cifosis aumentada
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Hiperlordosis" {...register("Postura")} />
+                            Hiperlordosis
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Asimetría Pélvica" {...register("Postura")} />
+                            Asimetría Pélvica
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Hombro Caído" {...register("Postura")} />
+                            Hombro Caído
+                        </label>
+
+                        <label style={styles.checkboxItem}>
+                            <input type="checkbox" value="Otra" {...register("Postura")} />
+                            Otra
+                        </label>
+                    </div>
+                    {/* RENDERIZADO CONDICIONAL: Solo aparece si "mostrarInputOtra" es verdadero */}
+                    {mostrarInputOtra && (
+                        <div style={{marginTop: '15px', animation: 'fadeIn 0.5s'}}>
+                            <label style={styles.label}>Especificar otra anomalía postural:</label>
+                            <textarea
+                                style={styles.textarea}
+                                {...register("otraPosturaDetalle")}
+                                placeholder="Describa la anomalía observada..."
+                            />
+                        </div>
+                    )}
+                </div>
+                {/*8- Valoracion Funcional*/}
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> 8. Valoración Funcional Global (0=Dependiente, 10=Independiente)</h3>
+
+                    <label style={styles.label}>Nivel de Independencia en AVDs:</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("nivelIndependencia")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{nivelIndependencia} /10</span>
+                    </div>
+                    <label style={styles.label}>Transferencias (Cama-Silla):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("transferencias")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{transferencias} /10</span>
+                    </div>
+                    <label style={styles.label}>Subir y Bajar Escaleras:</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("subirYbajarEscaleras")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{subirYbajarEscaleras} /10</span>
+                    </div>
+                    <label style={styles.label}>Marcha Funcional (distancia, velocidad):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("marchaFuncional")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{marchaFuncional} /10</span>
+                    </div>
+                    <label style={styles.label}>Alcance Manual (capacidad de agarre / mover):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("alcanceManual")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{alcanceManual} /10</span>
+                    </div>
+                    <label style={styles.label}>Tolerancia al Esfuerzo (funcional):</label>
+                    <div style={styles.sliderContainer}>
+                        {/* El input tipo "range" es la barra deslizante */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            style={styles.rangeInput}
+                            {...register("toleranciaEsfuerzo")}
+                            defaultValue="10" // Valor inicial visual
+                        />
+
+                        {/* Aquí mostramos el valor que 'watch' está viendo en tiempo real */}
+                        <span style={styles.numberDisplay}>{toleranciaEsfuerzo} /10</span>
+                    </div>
+                </div>
+
+                {/*9. Hallazgos Adicionales*/}
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}> 9. Valoración Funcional Global (0=Dependiente, 10=Independiente)</h3>
+                    <select style={styles.selectInput} {...register("gradoLimitacion")}>
+                        <option value="">-- Seleccione una opción --</option>
+                        <option value="Normal">Nula</option>
+                        <option value="Leve (Puede realizar la mayoria de(ADVs)">Leve (Puede realizar la mayoria de(ADVs)</option>
+                        <option value="Moderada (Requiere modificaciones /Ayudas)">Moderada (Requiere modificaciones /Ayudas)</option>
+                        <option value="Severa (Dependiente en varias ADVs)">Severa (Dependiente en varias ADVs)</option>
+                    </select>
+
+                <label style={styles.label}>Escala de Equilibrio (Ej. Tinetti/Berg): </label>
+                    <textarea style={styles.textarea}{...register("escalaEquilibrio")} placeholder={"Puntuación (Ej. Tinetti: 25/28)"}/>
+                    <label style={styles.label}>Pruebas Especiales positivas: </label>
+                    <textarea style={styles.textarea}{...register("pruebasEspeciales")} placeholder={"Ej. Signo de Phalen (+), Lachman (-)"}/>
+                    <label style={styles.label}>Observaciones generales del Fisioterapeuta: </label>
+                    <textarea style={styles.textarea}{...register("observaciones")} placeholder={"Resumen clínico, hipótesis diagnóstica funcional"}/>
+                    <label style={styles.label}>Hallazgos a la Palpación: </label>
+                    <textarea style={styles.textarea}{...register("hallazgosPalpacion")} placeholder={"Ej. Puntos gatillo activos en trapecio superior, Edema grado2 en tobillo"}/>
+                    <label style={styles.label}>Limitaciones en Actividades de la Vida Diaria (AVDs) detallado: </label>
+                    <textarea style={styles.textarea}{...register("limitacionesActividades")} placeholder={"Ej. Dificultad para levantar objetos del suelo..."}/>
+
+
+                </div>
 
 
                 {/* SECCIÓN 2: CONSULTA MÉDICA */}
                 <div style={styles.section}>
-                    <h3 style={{color: '#00a8cc'}}> Detalle de la consulta</h3>
-                    <label style={styles.label}>Motivo de Consulta:</label>
-                    <textarea
-                        style={styles.textarea}
-                        {...register("motivoConsulta")}
-                        placeholder="Describe qué le duele, desde cuándo, tipo de dolor..."
-                    />
-
                     <label style={styles.label}>Diagnóstico Fisioterapéutico:</label>
                     <textarea
                         style={styles.textarea}
@@ -776,6 +1107,62 @@ function App() {
                         {...register("tratamiento")}
                         placeholder="Ej: 10 sesiones de ultrasonido, ejercicios de fortalecimiento..."
                     />
+                </div>
+
+                {/* SECCIÓN FINAL: CONSENTIMIENTO */}
+                <div style={styles.section}>
+                    <h3 style={{color: '#00a8cc'}}>Consentimiento y Conformidad</h3>
+
+                    {/* Cuadro Verde de Texto Legal */}
+                    <div style={styles.legalBox}>
+                        <strong>**Otorgo mi consentimiento libre e informado</strong> para la valoración, diagnóstico y tratamiento de fisioterapia.
+                        Entiendo la naturaleza y los posibles riesgos/beneficios de los procedimientos. He recibido explicaciones sobre mi
+                        condición y el plan terapéutico. Acepto la toma de fotografías clínicas para fines de documentación de mi
+                        expediente.**
+                    </div>
+
+                    {/* Checkbox de Aceptación */}
+                    <div style={{marginBottom: '20px'}}>
+                        <label style={{display: 'flex', alignItems: 'center', gap: '10px', fontSize: '16px', cursor:'pointer'}}>
+                            <input
+                                type="checkbox"
+                                style={{transform: 'scale(1.5)'}}
+                                {...register("consentimientoInformado")}
+                            />
+                            He leído y acepto el consentimiento informado.
+                        </label>
+                    </div>
+
+                    {/* Cuadros de Firma (Lado a Lado) */}
+                    <div style={styles.checkboxContainer}> {/* Reusamos el container grid */}
+
+                        {/* Firma Paciente */}
+                        <div>
+                            <label style={styles.label}>Firma del paciente o responsable:</label>
+                            <div style={styles.signatureBox}>
+                                <input
+                                    type="text"
+                                    placeholder="Escriba su nombre completo para firmar"
+                                    style={styles.signatureInput}
+                                    {...register("firmaPaciente")}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Firma Fisio */}
+                        <div>
+                            <label style={styles.label}>Firma del Fisioterapeuta tratante:</label>
+                            <div style={styles.signatureBox}>
+                                <input
+                                    type="text"
+                                    placeholder="Escriba su nombre completo para firmar"
+                                    style={styles.signatureInput}
+                                    {...register("firmaFisio")}
+                                />
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
                 <button type="submit" style={styles.button}>
