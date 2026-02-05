@@ -20,8 +20,8 @@ public class PdfController {
         // --- CÓDIGO ESPÍA (Debug) ---
         System.out.println("================ RECIBIENDO SOLICITUD ================");
         System.out.println("Nombre Paciente: " + datos.getNombrePaciente());
-        System.out.println("Firma Paciente (Texto): " + datos.getFirmaPaciente()); // ¿Qué sale aquí?
-        System.out.println("Firma Fisio (Texto): " + datos.getFirmaFisio());       // ¿Y aquí?
+        System.out.println("Firma Paciente (Texto): " + datos.getFirmaPaciente()); 
+        System.out.println("Firma Fisio (Texto): " + datos.getFirmaFisio());       
         System.out.println("======================================================");
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -239,7 +239,7 @@ public class PdfController {
                 if (datos.getIntegridadCutanea().equals("Alterada")) {
                     document.add(new Paragraph("Hallazgos Específicos: ", fontNegrita));
 
-                    // AHORA SÍ: Usamos String.join para unir la lista limpiamente
+                   
                     if (datos.getHallazgosEspecificos() != null && !datos.getHallazgosEspecificos().isEmpty()) {
                         String hallazgos = String.join(", ", datos.getHallazgosEspecificos());
                         document.add(new Paragraph(hallazgos, fontTexto));
@@ -350,7 +350,7 @@ public class PdfController {
 
             // --- 4. FIRMA ---
             document.add(new Paragraph(" "));
-            // ... (código anterior del Plan de Tratamiento) ...
+         
 
             document.add(new Paragraph(" "));
             document.add(new Paragraph("------------------------------------------------"));
@@ -369,7 +369,7 @@ public class PdfController {
                             "condición y el plan terapéutico. Acepto la toma de fotografías clínicas para fines de documentación de mi expediente.",
                     FontFactory.getFont(FontFactory.HELVETICA, 10, java.awt.Color.DARK_GRAY)));
             celdaLegal.setPadding(10);
-            celdaLegal.setBorderColor(java.awt.Color.GREEN); // Borde verde como en tu diseño
+            celdaLegal.setBorderColor(java.awt.Color.GREEN); 
             celdaLegal.setBorderWidth(1f);
             tablaLegal.addCell(celdaLegal);
             document.add(tablaLegal);
@@ -409,14 +409,12 @@ public class PdfController {
             celdaFirmaF.setPaddingTop(10);
             celdaFirmaF.setPaddingLeft(20);
 
-            // Añadir celdas con un espacio en medio (truco visual usando celdas vacias si fuera necesario, pero aquí usaremos padding)
             tablaFirmas.addCell(celdaFirmaP);
             tablaFirmas.addCell(celdaFirmaF);
 
             document.add(tablaFirmas);
 
             document.close();
-            // ... (Resto del return)
 
             document.close();
 
