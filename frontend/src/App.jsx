@@ -7,7 +7,7 @@ const styles = {
         width: '100%',            // Ocupa el 100% de la pantalla
         minHeight: '100vh',       // Asegura que llegue hasta abajo
         margin: '0',              // Quita los márgenes externos
-        padding: '20px',          // Un poco de aire para que el texto no pegue al borde
+        padding: '20px',          
         fontFamily: 'Arial, sans-serif',
         backgroundColor: '#ffffff',
         color: '#000000',
@@ -26,7 +26,7 @@ const styles = {
         borderRadius: '8px',      // Bordes un poco más redondeados
         border: '1px solid #e9ecef',
         color: '#000000',
-        maxWidth: '1000px',       // OJO: Esto evita que en pantallas gigantes se vea "estirado" feo
+        maxWidth: '1000px',       
         margin: '0 auto'          // Centra el contenido dentro de la pantalla completa
     },
     label: {
@@ -96,8 +96,8 @@ const styles = {
         width: '100%',
         padding: '12px',
         borderRadius: '6px',
-        border: '1px solid #27ae60', // El borde verde que te gusta
-        backgroundColor: '#f9fff9', // Un fondo verdecito muy suave
+        border: '1px solid #27ae60',
+        backgroundColor: '#f9fff9', 
         fontSize: '16px',
         marginTop: '5px',
         marginBottom: '15px',
@@ -175,7 +175,7 @@ const styles = {
         borderBottom: '1px solid #ccc',
         width: '100%',
         fontSize: '18px',
-        fontFamily: 'Cursive, sans-serif', // Fuente estilo firma (si el navegador la tiene)
+        fontFamily: 'Cursive, sans-serif', // Fuente estilo firma 
         outline: 'none',
         background: 'transparent'
     }
@@ -240,14 +240,14 @@ function App() {
         try {
             // Enviamos los datos al servidor Java
             const response = await axios.post('http://localhost:8080/api/pdf/generar', data, {
-                responseType: 'blob', // Importante: esperamos un archivo binario (PDF)
+                responseType: 'blob', // esperamos un archivo binario (PDF)
             });
 
             // Crear una URL temporal para descargar el archivo
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            // Este será el nombre del archivo descargado
+            // nombre del archivo descargado
             link.setAttribute('download', `Historia_${data.nombrePaciente || 'Paciente'}.pdf`);
             document.body.appendChild(link);
             link.click(); // Forzar el clic de descarga
